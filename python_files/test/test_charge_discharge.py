@@ -21,6 +21,23 @@ day_0 = {
     'peak': 1.61
 }
 
+
+
+def test__march_4th__2300__real__do_charge():
+    current_price = 1.93
+    current_hour = 23
+    do_charge = charge_from_grid.allow_factor(
+        current_hour=current_hour,
+        current_price=current_price,
+        day_average=march_4th['average'],
+        off_peak_1=march_4th['off_peak_1'],
+        off_peak_2=march_4th['off_peak_2'], 
+        peak=march_4th['peak'] 
+    ) 
+    assert do_charge > 1
+
+# TODO: Om vi är i off_peak_2 så ta med offpeak1 för nästa dag i beräkningen
+
 def test__march_4th__0000__real__do_charge():
     current_price = 1.73
     current_hour = 0

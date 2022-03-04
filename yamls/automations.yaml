@@ -1,0 +1,109 @@
+- id: '1646036941867'
+  alias: dissalow_discharge
+  description: Disallow discharge
+  trigger: []
+  condition: []
+  action:
+  - device_id: a91612cf17be4c8531923e784979a021
+    domain: number
+    entity_id: number.maximum_discharging_power
+    type: set_value
+    value: 0
+  mode: restart
+- id: '1646037204588'
+  alias: allow_discharge_based_on_electricity_price
+  description: 'Allow discharging of the battery if electricity price is high '
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.battery_allow_charge_from_grid
+    below: '1'
+  condition: []
+  action:
+  - device_id: a91612cf17be4c8531923e784979a021
+    domain: number
+    entity_id: number.maximum_discharging_power
+    type: set_value
+    value: 3000
+  - device_id: a91612cf17be4c8531923e784979a021
+    domain: select
+    entity_id: select.working_mode
+    type: select_option
+    option: Maximise Self Consumption
+  - type: turn_off
+    device_id: a91612cf17be4c8531923e784979a021
+    entity_id: switch.charge_from_grid
+    domain: switch
+  mode: restart
+- id: '1646037683490'
+  alias: allow_charge_from_grid_based_on_electricity_price_and_solar_yield
+  description: Allow battery to be charged from grid if the electricity price is cheap
+    enough and as long as solar yield is below 500W
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.battery_allow_charge_from_grid
+    above: '1'
+  condition:
+  - condition: numeric_state
+    entity_id: sensor.input_power
+    below: '500'
+  action:
+  - type: turn_on
+    device_id: a91612cf17be4c8531923e784979a021
+    entity_id: switch.charge_from_grid
+    domain: switch
+  - device_id: a91612cf17be4c8531923e784979a021
+    domain: number
+    entity_id: number.grid_charge_maximum_power
+    type: set_value
+    value: 2500
+  - device_id: a91612cf17be4c8531923e784979a021
+    domain: select
+    entity_id: select.working_mode
+    type: select_option
+    option: Time Of Use
+  mode: restart
+- id: '1646037770978'
+  alias: dissallow_charge_from_grid
+  description: Dont charge battery from grid if Price is too high.
+  trigger: []
+  condition: []
+  action:
+  - type: turn_off
+    device_id: a91612cf17be4c8531923e784979a021
+    entity_id: switch.charge_from_grid
+    domain: switch
+  mode: restart
+- id: '1646064091414'
+  alias: charge_more_from_grid_if_forecast_is_poor
+  description: If the solar production forecast is poor then charge more from grid
+  trigger:
+  - platform: time
+    at: '22:00'
+  condition:
+  - condition: numeric_state
+    entity_id: sensor.energy_production_tomorrow_2
+    below: '15'
+  action:
+  - device_id: a91612cf17be4c8531923e784979a021
+    domain: number
+    entity_id: number.grid_charge_cutoff_soc
+    type: set_value
+    value: 90
+  mode: restart
+- id: '1646064273098'
+  alias: charge_less_from_grid_if_forecast_is_good
+  description: If the solar production forecast is good then charge less from grid
+  trigger:
+  - platform: time
+    at: '22:00'
+  condition:
+  - condition: numeric_state
+    entity_id: sensor.energy_production_tomorrow_2
+    above: '15'
+  action:
+  - device_id: a91612cf17be4c8531923e784979a021
+    domain: number
+    entity_id: number.grid_charge_cutoff_soc
+    type: set_value
+    value: 60
+  mode: restart
