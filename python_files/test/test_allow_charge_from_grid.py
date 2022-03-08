@@ -1,6 +1,5 @@
 from src.allow_charge_from_grid import AllowChargeFromGrid
 from unittest import TestCase
-import datetime
 
 march_8th = {
     'today': [2.12, 1.31, 1.61, 2.06, 2.38, 3.03, 3.23, 9.1, 8.58, 5.45, 3.12, 2.9, 2.83, 2.82, 2.78, 2.93, 2.72, 3.16, 3.73, 3.41, 3.12, 3.03, 2.94, 2.2],
