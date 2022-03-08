@@ -1,1 +1,1 @@
-scp python_files/src/battery.py pi@192.168.1.17:/home/pi/projects/raspbian_provision/appdaemon/apps
+scp python_files/src/allow_charge_from_grid.py pi@192.168.1.17:/home/pi/projects/raspbian_provision/appdaemon/apps
