@@ -1,143 +1,63 @@
-from src import charge_from_grid
+from src.allow_charge_from_grid import AllowChargeFromGrid
+from unittest import TestCase
+import datetime
 
-march_3rd = {
-    'average': 2.19,
-    'off_peak_1': 1.63,
-    'off_peak_2': 2.08,
-    'peak': 2.11
+march_8th = {
+    'today': [2.12, 1.31, 1.61, 2.06, 2.38, 3.03, 3.23, 9.1, 8.58, 5.45, 3.12, 2.9, 2.83, 2.82, 2.78, 2.93, 2.72, 3.16, 3.73, 3.41, 3.12, 3.03, 2.94, 2.2],
+    'tomorrow': [2.04, 1.98, 1.94, 1.78, 2.23, 3.03, 3.4, 7.88, 7.36, 3.33, 3.17, 3.12, 3.09, 3.03, 2.99, 3, 2.95, 3.06, 3.13, 3.08, 3.02, 2.97, 1.07, 0.42]
 }
 
-march_4th = {
-    'average': 2.67,
-    'off_peak_1': 2.41,
-    'off_peak_2': 2.13,
-    'peak': 2.78
-}
-
-day_0 = {
-    'average': 1.2,
-    'off_peak_1': 0.63,
-    'off_peak_2': 2.08,
-    'peak': 1.61
+march_9th = {
+    'tomorrow': [],
+    'today': [2.04, 1.98, 1.94, 1.78, 2.23, 3.03, 3.4, 7.88, 7.36, 3.33, 3.17, 3.12, 3.09, 3.03, 2.99, 3, 2.95, 3.06, 3.13, 3.08, 3.02, 2.97, 1.07, 0.42]
 }
 
 
+class TestAllowChargeFromGrid(TestCase):
 
-def test__march_4th__2300__real__do_charge():
-    current_price = 1.93
-    current_hour = 23
-    do_charge = charge_from_grid.allow_factor(
-        current_hour=current_hour,
-        current_price=current_price,
-        day_average=march_4th['average'],
-        off_peak_1=march_4th['off_peak_1'],
-        off_peak_2=march_4th['off_peak_2'], 
-        peak=march_4th['peak'] 
-    ) 
-    assert do_charge > 1
+    def test__march_8th__1200__real(self):
+        current_hour = 12
+        factor = AllowChargeFromGrid.get_allow_factor(
+            current_hour=current_hour,
+            prices_all=march_8th['today'] + march_8th['tomorrow'],
+            price_current=march_8th['today'][current_hour]
+        )
+        assert factor > 0.61 and factor < 0.7
 
-# TODO: Om vi är i off_peak_2 så ta med offpeak1 för nästa dag i beräkningen
+    def test__march_8th__2200__real(self):
+        current_hour = 22
+        factor = AllowChargeFromGrid.get_allow_factor(
+            current_hour=current_hour,
+            prices_all=march_8th['today'] + march_8th['tomorrow'],
+            price_current=march_8th['today'][current_hour]
+        )
+        assert factor > 0.62 and factor < 0.7
 
-def test__march_4th__0000__real__do_charge():
-    current_price = 1.73
-    current_hour = 0
-    do_charge = charge_from_grid.allow_factor(
-        current_hour=current_hour,
-        current_price=current_price,
-        day_average=march_4th['average'],
-        off_peak_1=march_4th['off_peak_1'],
-        off_peak_2=march_4th['off_peak_2'], 
-        peak=march_4th['peak'] 
-    ) 
-    assert do_charge > 1
+    def test__march_8th__2300__real(self):
+        current_hour = 23
+        factor = AllowChargeFromGrid.get_allow_factor(
+            current_hour=current_hour,
+            prices_all=march_8th['today'] + march_8th['tomorrow'],
+            price_current=march_8th['today'][current_hour]
+        )
+        assert factor > 1 and factor < 1.1
+        assert AllowChargeFromGrid.get_max_grid_charging_power(factor) > 1500
 
-def test__march_4th__0000___do_not_charge():
-    current_price = 1.9
-    current_hour = 4
-    do_charge = charge_from_grid.allow_factor(
-        current_hour=current_hour,
-        current_price=current_price,
-        day_average=march_4th['average'],
-        off_peak_1=march_4th['off_peak_1'],
-        off_peak_2=march_4th['off_peak_2'], 
-        peak=march_4th['peak'] 
-    ) 
-    assert do_charge < 1
+    def test__march_9th__0800__real(self):
+        current_hour = 8
+        factor = AllowChargeFromGrid.get_allow_factor(
+            current_hour=current_hour,
+            prices_all=march_9th['today'] + march_9th['tomorrow'],
+            price_current=march_9th['today'][current_hour]
+        )
+        assert factor > 0.1 and factor < 0.2
+        assert AllowChargeFromGrid.get_max_grid_charging_power(factor) < 500
 
-def test__march_4th__0100__do_charge():
-    current_price = 1.67
-    current_hour = 1
-    do_charge = charge_from_grid.allow_factor(
-        current_hour=current_hour,
-        current_price=current_price,
-        day_average=march_4th['average'],
-        off_peak_1=march_4th['off_peak_1'],
-        off_peak_2=march_4th['off_peak_2'], 
-        peak=march_4th['peak'] 
-    )
-    assert do_charge > 1
-
-def test__march_3rd__1500__do_charge():
-    current_price = 1.6
-    current_hour = 15
-    do_charge = charge_from_grid.allow_factor(
-        current_hour=current_hour,
-        current_price=current_price,
-        day_average=march_3rd['average'],
-        off_peak_1=march_3rd['off_peak_1'],
-        off_peak_2=march_3rd['off_peak_2'], 
-        peak=march_3rd['peak'] 
-    ) 
-    assert do_charge > 1
-
-def test__mars_third__2300__real__do_not_charge():
-    current_price = 1.82
-    current_hour = 23
-    do_charge = charge_from_grid.allow_factor(
-        current_hour=current_hour,
-        current_price=current_price,
-        day_average=march_3rd['average'],
-        off_peak_1=march_3rd['off_peak_1'],
-        off_peak_2=march_3rd['off_peak_2'], 
-        peak=march_3rd['peak'] 
-    ) 
-    assert do_charge < 1
-
-def test__march_3rd__0800__do_not_charge():
-    current_price = 2.55
-    current_hour = 8
-    do_charge = charge_from_grid.allow_factor(
-        current_hour=current_hour,
-        current_price=current_price,
-        day_average=march_3rd['average'],
-        off_peak_1=march_3rd['off_peak_1'],
-        off_peak_2=march_3rd['off_peak_2'], 
-        peak=march_3rd['peak'] 
-    ) 
-    assert do_charge < 1
-
-def test__day_0__2100__do_not_charge():
-    current_price = 2.1
-    current_hour = 21
-    do_charge = charge_from_grid.allow_factor(
-        current_hour=current_hour,
-        current_price=current_price,
-        day_average=march_3rd['average'],
-        off_peak_1=march_3rd['off_peak_1'],
-        off_peak_2=march_3rd['off_peak_2'], 
-        peak=march_3rd['peak'] 
-    ) 
-    assert do_charge < 1
-
-def test__day_0__2100__do_charge__price_low():
-    current_price = 1.6
-    current_hour = 21
-    do_charge = charge_from_grid.allow_factor(
-        current_hour=current_hour,
-        current_price=current_price,
-        day_average=march_3rd['average'],
-        off_peak_1=march_3rd['off_peak_1'],
-        off_peak_2=march_3rd['off_peak_2'], 
-        peak=march_3rd['peak'] 
-    ) 
-    assert do_charge > 1
+    def test__march_9th__0900__real(self):
+        current_hour = 9
+        factor = AllowChargeFromGrid.get_allow_factor(
+            current_hour=current_hour,
+            prices_all=march_9th['today'] + march_9th['tomorrow'],
+            price_current=march_9th['today'][current_hour]
+        )
+        assert factor > 0.4 and factor < 0.5

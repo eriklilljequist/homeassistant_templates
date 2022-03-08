@@ -1,0 +1,4 @@
+hassapi
+flake8
+pytest
+rope
