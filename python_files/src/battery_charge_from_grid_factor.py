@@ -16,13 +16,16 @@ class BatteryChargeFromGridFactor(hassapi.Hass):
     def execute(self):
         nordpool_sensor = self.entities.sensor.nordpool_kwh_se3_sek_2_10_025
         hour_current = datetime.now().hour
-        self.log(f'Current hour is: {hour_current}')
+        price_current = nordpool_sensor.attributes.current_price
         factor = BatteryChargeFromGridFactor.get_allow_factor(
-            price_current=nordpool_sensor.attributes.current_price,
+            price_current=price_current,
             prices_all=nordpool_sensor.attributes.today + nordpool_sensor.attributes.tomorrow,
             hour_current=hour_current
         )
+        self.log(f'Current hour is: {hour_current}')
+        self.log(f'Current price is: {price_current}')
         self.log(f'Factor is: {factor}')
+
         self.set_state("sensor.battery_charge_from_grid_factor", state=factor)
         self.set_value("number.grid_charge_maximum_power", value=BatteryChargeFromGridFactor.get_max_grid_charging_power(factor))
         self.set_value("number.maximum_discharging_power", value=BatteryChargeFromGridFactor.get_max_discharging_power(factor))
