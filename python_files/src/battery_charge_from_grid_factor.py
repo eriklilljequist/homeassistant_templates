@@ -1,5 +1,6 @@
 import hassapi
 from datetime import datetime
+import pytz
 
 
 class BatteryChargeFromGridFactor(hassapi.Hass):
@@ -15,7 +16,8 @@ class BatteryChargeFromGridFactor(hassapi.Hass):
 
     def execute(self):
         nordpool_sensor = self.entities.sensor.nordpool_kwh_se3_sek_2_10_025
-        hour_current = datetime.now().hour
+        zone_se = pytz.timezone('Europe/Stockholm')
+        hour_current = datetime.now(tz=zone_se).hour
         price_current = nordpool_sensor.attributes.current_price
         factor = BatteryChargeFromGridFactor.get_allow_factor(
             price_current=price_current,

@@ -1,5 +1,13 @@
 from src.battery_charge_from_grid_factor import BatteryChargeFromGridFactor
 from unittest import TestCase
+from datetime import datetime
+import pytz
+
+
+def test__time():
+    zone_se = pytz.timezone('Europe/Stockholm')
+    datetime.now(tz=zone_se).hour
+    pass
 
 march_8th = {
     'today': [2.12, 1.31, 1.61, 2.06, 2.38, 3.03, 3.23, 9.1, 8.58, 5.45, 3.12, 2.9, 2.83, 2.82, 2.78, 2.93, 2.72, 3.16, 3.73, 3.41, 3.12, 3.03, 2.94, 2.2],
