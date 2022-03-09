@@ -15,48 +15,48 @@ march_9th = {
 class TestAllowChargeFromGrid(TestCase):
 
     def test__march_8th__1200(self):
-        current_hour = 12
+        hour_current = 12
         factor = AllowChargeFromGrid.get_allow_factor(
-            current_hour=current_hour,
+            hour_current=hour_current,
             prices_all=march_8th['today'] + march_8th['tomorrow'],
-            price_current=march_8th['today'][current_hour]
+            price_current=march_8th['today'][hour_current]
         )
         assert factor > 0.61 and factor < 0.7
 
     def test__march_8th__2200(self):
-        current_hour = 22
+        hour_current = 22
         factor = AllowChargeFromGrid.get_allow_factor(
-            current_hour=current_hour,
+            hour_current=hour_current,
             prices_all=march_8th['today'] + march_8th['tomorrow'],
-            price_current=march_8th['today'][current_hour]
+            price_current=march_8th['today'][hour_current]
         )
         assert factor > 0.62 and factor < 0.7
 
     def test__march_8th__2300(self):
-        current_hour = 23
+        hour_current = 23
         factor = AllowChargeFromGrid.get_allow_factor(
-            current_hour=current_hour,
+            hour_current=hour_current,
             prices_all=march_8th['today'] + march_8th['tomorrow'],
-            price_current=march_8th['today'][current_hour]
+            price_current=march_8th['today'][hour_current]
         )
         assert factor > 1 and factor < 1.1
         assert AllowChargeFromGrid.get_max_grid_charging_power(factor) > 1500
 
     def test__march_9th__0800(self):
-        current_hour = 8
+        hour_current = 8
         factor = AllowChargeFromGrid.get_allow_factor(
-            current_hour=current_hour,
+            hour_current=hour_current,
             prices_all=march_9th['today'] + march_9th['tomorrow'],
-            price_current=march_9th['today'][current_hour]
+            price_current=march_9th['today'][hour_current]
         )
         assert factor > 0.1 and factor < 0.2
         assert AllowChargeFromGrid.get_max_grid_charging_power(factor) < 500
 
     def test__march_9th__0900(self):
-        current_hour = 9
+        hour_current = 9
         factor = AllowChargeFromGrid.get_allow_factor(
-            current_hour=current_hour,
+            hour_current=hour_current,
             prices_all=march_9th['today'] + march_9th['tomorrow'],
-            price_current=march_9th['today'][current_hour]
+            price_current=march_9th['today'][hour_current]
         )
         assert factor > 0.4 and factor < 0.5
