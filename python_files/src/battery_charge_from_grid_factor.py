@@ -6,7 +6,7 @@ class BatteryChargeFromGridFactor(hassapi.Hass):
     def initialize(self):
         self.listen_state(self.nordpool_price_change, "sensor.nordpool_kwh_se3_sek_2_10_025", constrain_presence="everyone")
 
-    def nordpool_price_change(self, *_):
+    def nordpool_price_change(self, entity, attribute, old, new, kwargs):
         nordpool_sensor = self.entities.sensor.nordpool_kwh_se3_sek_2_10_025
         factor = BatteryChargeFromGridFactor.get_allow_factor(
             price_current=nordpool_sensor.attributes.current_price,
@@ -40,7 +40,7 @@ class BatteryChargeFromGridFactor(hassapi.Hass):
 
     @staticmethod
     def calculate_factor(price_current, price_average_current, price_average_future):
-        threshold_factor = 1.8  # the bigger value the longer it will take until charge fromgrid reaches 1
+        threshold_factor = 1.8  # the bigger value the longer it will take until charge from grid reaches 1
         average_factor_future = price_average_future / price_current
         average_factor_current = price_average_current / price_current
         return average_factor_future * average_factor_current / threshold_factor
