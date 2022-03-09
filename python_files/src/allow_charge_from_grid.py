@@ -7,10 +7,11 @@ class AllowChargeFromGrid(hassapi.Hass):
         self.listen_state(self.nordpool_price_change, "sensor.nordpool_kwh_se3_sek_2_10_025", constrain_presence="everyone")
 
     def nordpool_price_change(self, entity, attribute, old, new, kwargs):
+        nordpool_sensor = self.entities.sensor.nordpool_kwh_se3_sek_2_10_025
         factor = AllowChargeFromGrid.get_allow_factor(
-            current_price=entity.attributes.current_price,
-            all_prices=entity.attributes.today + entity.attributes.tomorrow,
-            current_hour=datetime.datetime.now().hour
+            price_current=nordpool_sensor.attributes.current_price,
+            prices_all=nordpool_sensor.attributes.today + nordpool_sensor.attributes.tomorrow,
+            hour_current=datetime.datetime.now().hour
         )
         self.set_state("sensor.battery_allow_charge_from_grid_2", state=factor)
         self.set_state("number.maximum_discharging_power", state=AllowChargeFromGrid.get_max_grid_charging_power(factor))
@@ -20,10 +21,10 @@ class AllowChargeFromGrid(hassapi.Hass):
         return min(int(2000 * factor), 3000)
 
     @staticmethod
-    def get_allow_factor(price_current, prices_all, current_hour):
+    def get_allow_factor(price_current, prices_all, hour_current):
         period = 6
-        prices_current = prices_all[current_hour:current_hour + period]
-        prices_future = prices_all[current_hour + period:current_hour + period * 2]
+        prices_current = prices_all[hour_current:hour_current + period]
+        prices_future = prices_all[hour_current + period:hour_current + period * 2]
         price_average_current = AllowChargeFromGrid.get_average(prices_current)
         price_average_future = AllowChargeFromGrid.get_average(prices_future)
 
