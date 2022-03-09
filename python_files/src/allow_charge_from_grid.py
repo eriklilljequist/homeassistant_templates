@@ -15,8 +15,8 @@ class AllowChargeFromGrid(hassapi.Hass):
             hour_current=datetime.datetime.now().hour
         )
         self.set_state("sensor.battery_allow_charge_from_grid_2", state=factor)
-        self.set_state("number.grid_charge_maximum_power", state=AllowChargeFromGrid.get_max_grid_charging_power(factor))
-        self.set_state("number.maximum_discharging_power", state=AllowChargeFromGrid.get_max_discharging_power(factor))
+        self.set_value("sensor.allowed_grid_charge_maximum_power", value=AllowChargeFromGrid.get_max_grid_charging_power(factor))
+        self.set_value("sensor.allowed_maximum_discharging_power", value=AllowChargeFromGrid.get_max_discharging_power(factor))
 
     @staticmethod
     def get_max_grid_charging_power(factor):
