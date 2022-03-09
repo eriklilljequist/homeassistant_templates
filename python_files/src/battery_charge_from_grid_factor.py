@@ -1,18 +1,28 @@
 import hassapi
-import datetime
+from datetime import datetime
 
 
 class BatteryChargeFromGridFactor(hassapi.Hass):
     def initialize(self):
         self.listen_state(self.nordpool_price_change, "sensor.nordpool_kwh_se3_sek_2_10_025", constrain_presence="everyone")
+        self.run_every(self.from_schedule, datetime.now(), 60)
+
+    def from_schedule(self, kwargs):
+        self.execute()
 
     def nordpool_price_change(self, entity, attribute, old, new, kwargs):
+        self.execute()
+
+    def execute(self):
         nordpool_sensor = self.entities.sensor.nordpool_kwh_se3_sek_2_10_025
+        hour_current = datetime.now().hour
+        self.log(f'Current hour is: {hour_current}')
         factor = BatteryChargeFromGridFactor.get_allow_factor(
             price_current=nordpool_sensor.attributes.current_price,
             prices_all=nordpool_sensor.attributes.today + nordpool_sensor.attributes.tomorrow,
-            hour_current=datetime.datetime.now().hour
+            hour_current=hour_current
         )
+        self.log(f'Factor is: {factor}')
         self.set_state("sensor.battery_charge_from_grid_factor", state=factor)
         self.set_value("number.grid_charge_maximum_power", value=BatteryChargeFromGridFactor.get_max_grid_charging_power(factor))
         self.set_value("number.maximum_discharging_power", value=BatteryChargeFromGridFactor.get_max_discharging_power(factor))
