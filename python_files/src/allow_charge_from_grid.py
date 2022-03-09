@@ -20,11 +20,11 @@ class AllowChargeFromGrid(hassapi.Hass):
 
     @staticmethod
     def get_max_grid_charging_power(factor):
-        return min(int(1500 * factor), 3000)
+        return round(min(int(1500 * factor), 3000), 3)
 
     @staticmethod
     def get_max_discharging_power(factor):
-        return min(int(1500 / factor), 3000)
+        return round(min(int(1500 / factor), 3000), 3)
 
     @staticmethod
     def get_allow_factor(price_current, prices_all, hour_current):
@@ -34,10 +34,10 @@ class AllowChargeFromGrid(hassapi.Hass):
         price_average_current = AllowChargeFromGrid.get_average(prices_current)
         price_average_future = AllowChargeFromGrid.get_average(prices_future)
 
-        return AllowChargeFromGrid.calculate_factor(
+        return round(AllowChargeFromGrid.calculate_factor(
             price_current=price_current,
             price_average_current=price_average_current,
-            price_average_future=price_average_future)
+            price_average_future=price_average_future), 3)
 
     @staticmethod
     def calculate_factor(price_current, price_average_current, price_average_future):
