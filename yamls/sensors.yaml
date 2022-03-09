@@ -1,7 +1,0 @@
-- name: House Consumption
-  state: >
-    {% set input_power = states('sensor.input_power') | float %}
-    {% set active_power = states('sensor.active_power') | float %}
-    {% set charge_discharge_power = states('sensor.charge_discharge_power') | float %}
-    {% set grid_active_power = states('sensor.grid_active_power') | float %}
-    {{ active_power - grid_active_power }}

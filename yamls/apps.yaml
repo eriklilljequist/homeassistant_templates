@@ -1,0 +1,6 @@
+BatteryChargeFromGridFactor:
+  module: battery_charge_from_grid_factor
+  class: BatteryChargeFromGridFactor
+HouseConsumption:
+  module: house_consumption
+  class: HouseConsumption

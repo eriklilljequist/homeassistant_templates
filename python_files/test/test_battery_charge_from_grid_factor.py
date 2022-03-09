@@ -7,8 +7,13 @@ march_8th = {
 }
 
 march_9th = {
-    'tomorrow': [],
-    'today': [2.04, 1.98, 1.94, 1.78, 2.23, 3.03, 3.4, 7.88, 7.36, 3.33, 3.17, 3.12, 3.09, 3.03, 2.99, 3, 2.95, 3.06, 3.13, 3.08, 3.02, 2.97, 1.07, 0.42]
+    'today': [2.04, 1.98, 1.94, 1.78, 2.23, 3.03, 3.4, 7.88, 7.36, 3.33, 3.17, 3.12, 3.09, 3.03, 2.99, 3, 2.95, 3.06, 3.13, 3.08, 3.02, 2.97, 1.07, 0.42],
+    'tomorrow': [0.29, 0.17, 0.17, 0.19, 0.27, 0.84, 0.98, 3.13, 3.14, 3.06, 1.61, 1.39, 1.67, 1.97, 1.61, 2.63, 2.91, 2.97, 3.01, 2.97, 2.35, 0.83, 0.68, 0.19]
+}
+
+march_10th = {
+    'today': [0.29, 0.17, 0.17, 0.19, 0.27, 0.84, 0.98, 3.13, 3.14, 3.06, 1.61, 1.39, 1.67, 1.97, 1.61, 2.63, 2.91, 2.97, 3.01, 2.97, 2.35, 0.83, 0.68, 0.19],
+    'tomorrow': []
 }
 
 
@@ -61,6 +66,44 @@ class TestBatteryChargeFromGridFactor(TestCase):
         )
         assert factor > 0.4 and factor < 0.5
 
+    def test__march_9th__2100(self):
+        hour_current = 21
+        factor = BatteryChargeFromGridFactor.get_allow_factor(
+            hour_current=hour_current,
+            prices_all=march_9th['today'] + march_9th['tomorrow'],
+            price_current=march_9th['today'][hour_current]
+        )
+        assert factor > 0.07 and factor < 0.08
+
+    def test__march_9th__2200(self):
+        hour_current = 22
+        factor = BatteryChargeFromGridFactor.get_allow_factor(
+            hour_current=hour_current,
+            prices_all=march_9th['today'] + march_9th['tomorrow'],
+            price_current=march_9th['today'][hour_current]
+        )
+        assert factor > 0.3 and factor < 0.4
+
+    def test__march_9th__2300(self):
+        hour_current = 23
+        factor = BatteryChargeFromGridFactor.get_allow_factor(
+            hour_current=hour_current,
+            prices_all=march_9th['today'] + march_9th['tomorrow'],
+            price_current=march_9th['today'][hour_current]
+        )
+        assert 2529 == BatteryChargeFromGridFactor.get_max_grid_charging_power(factor)
+        assert factor > 1.6 and factor < 1.7
+
+    def test__march_10th__0000(self):
+        hour_current = 0
+        factor = BatteryChargeFromGridFactor.get_allow_factor(
+            hour_current=hour_current,
+            prices_all=march_10th['today'] + march_10th['tomorrow'],
+            price_current=march_10th['today'][hour_current]
+        )
+        assert 3000 == BatteryChargeFromGridFactor.get_max_grid_charging_power(factor)
+        assert factor > 4.7 and factor < 4.8
+
     def test__get_max_grid_charging_power(self):
         assert BatteryChargeFromGridFactor.get_max_grid_charging_power(factor=2.34) == 3000
         assert BatteryChargeFromGridFactor.get_max_grid_charging_power(factor=1.3) == 1950
@@ -71,6 +114,7 @@ class TestBatteryChargeFromGridFactor(TestCase):
         assert BatteryChargeFromGridFactor.get_max_discharging_power(factor=2.34) == 641
         assert BatteryChargeFromGridFactor.get_max_discharging_power(factor=1.3) == 1153
         assert BatteryChargeFromGridFactor.get_max_discharging_power(factor=1) == 1500
-        assert BatteryChargeFromGridFactor.get_max_discharging_power(factor=0.51) == 2941
+        assert BatteryChargeFromGridFactor.get_max_discharging_power(factor=0.48) == 3000
         assert BatteryChargeFromGridFactor.get_max_discharging_power(factor=0.5) == 3000
+        assert BatteryChargeFromGridFactor.get_max_discharging_power(factor=0.51) == 2941
         assert BatteryChargeFromGridFactor.get_max_discharging_power(factor=0.34) == 3000
