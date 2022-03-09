@@ -16,10 +16,15 @@ class AllowChargeFromGrid(hassapi.Hass):
         )
         self.set_state("sensor.battery_allow_charge_from_grid_2", state=factor)
         self.set_state("number.grid_charge_maximum_power", state=AllowChargeFromGrid.get_max_grid_charging_power(factor))
+        self.set_state("number.maximum_discharging_power", state=AllowChargeFromGrid.get_max_discharging_power(factor))
 
     @staticmethod
     def get_max_grid_charging_power(factor):
-        return min(int(2000 * factor), 3000)
+        return min(int(1500 * factor), 3000)
+
+    @staticmethod
+    def get_max_discharging_power(factor):
+        return min(int(1500 / factor), 3000)
 
     @staticmethod
     def get_allow_factor(price_current, prices_all, hour_current):

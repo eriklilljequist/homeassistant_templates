@@ -60,3 +60,17 @@ class TestAllowChargeFromGrid(TestCase):
             price_current=march_9th['today'][hour_current]
         )
         assert factor > 0.4 and factor < 0.5
+
+    def test__get_max_grid_charging_power(self):
+        assert AllowChargeFromGrid.get_max_grid_charging_power(factor=2.34) == 3000
+        assert AllowChargeFromGrid.get_max_grid_charging_power(factor=1.3) == 1950
+        assert AllowChargeFromGrid.get_max_grid_charging_power(factor=1) == 1500
+        assert AllowChargeFromGrid.get_max_grid_charging_power(factor=0.34) == 510
+
+    def test__get_max_discharging_power(self):
+        assert AllowChargeFromGrid.get_max_discharging_power(factor=2.34) == 641
+        assert AllowChargeFromGrid.get_max_discharging_power(factor=1.3) == 1153
+        assert AllowChargeFromGrid.get_max_discharging_power(factor=1) == 1500
+        assert AllowChargeFromGrid.get_max_discharging_power(factor=0.51) == 2941
+        assert AllowChargeFromGrid.get_max_discharging_power(factor=0.5) == 3000
+        assert AllowChargeFromGrid.get_max_discharging_power(factor=0.34) == 3000
