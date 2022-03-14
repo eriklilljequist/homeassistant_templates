@@ -32,6 +32,18 @@ class BatteryChargeFromGridFactor(hassapi.Hass):
         self.set_value("number.grid_charge_maximum_power", value=BatteryChargeFromGridFactor.get_max_grid_charging_power(factor))
         self.set_value("number.maximum_discharging_power", value=BatteryChargeFromGridFactor.get_max_discharging_power(factor))
 
+        if factor > 1:
+            self.log('factor is greater than 1, setting Time Of Use and charge from grid')
+            self.select_option("select.working_mode", "Time Of Use")
+            self.turn_on("switch.charge_from_grid")
+        else:
+            self.log('factor is less than 1, setting Maximise Self Consumption and NOT charge from grid')
+            self.select_option("select.working_mode", "Maximise Self Consumption")
+            self.turn_off("switch.charge_from_grid")
+
+        self.log(f'Working mode is: {self.entities.select.working_mode.state}')
+        self.log(f'Charge from grid switch is: {self.entities.switch.charge_from_grid.state}')
+
     @staticmethod
     def get_max_grid_charging_power(factor):
         return round(min(int(1500 * factor), 3000), 3)
@@ -55,6 +67,13 @@ class BatteryChargeFromGridFactor(hassapi.Hass):
 
     @staticmethod
     def calculate_factor(price_current, price_average_current, price_average_future):
+        threshold_factor = 1.4  # the bigger value the longer it will take until charge from grid reaches 1
+        average_factor_future = price_average_future / price_current
+        average_factor_current = price_average_current / price_current
+        return (average_factor_future + average_factor_current) / 2 / threshold_factor
+
+    @staticmethod
+    def calculate_factor_old(price_current, price_average_current, price_average_future):
         threshold_factor = 1.8  # the bigger value the longer it will take until charge from grid reaches 1
         average_factor_future = price_average_future / price_current
         average_factor_current = price_average_current / price_current
