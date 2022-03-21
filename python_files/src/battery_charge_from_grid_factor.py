@@ -5,8 +5,8 @@ import pytz
 
 class BatteryChargeFromGridFactor(hassapi.Hass):
     def initialize(self):
-        self.listen_state(self.nordpool_price_change, "sensor.nordpool_kwh_se3_sek_2_10_025", constrain_presence="everyone")
-        self.run_every(self.from_schedule, datetime.now(), 10 * 60)
+        self.listen_state(self.nordpool_price_change, 'sensor.nordpool_kwh_se3_sek_2_10_025', constrain_presence='everyone')
+        # self.run_every(self.from_schedule, datetime.now(), 10 * 60)
 
     def from_schedule(self, kwargs):
         self.execute()
@@ -28,18 +28,18 @@ class BatteryChargeFromGridFactor(hassapi.Hass):
         self.log(f'Current price is: {price_current}')
         self.log(f'Factor is: {factor}')
 
-        self.set_state("sensor.battery_charge_from_grid_factor", state=factor)
-        self.set_value("number.grid_charge_maximum_power", value=BatteryChargeFromGridFactor.get_max_grid_charging_power(factor))
-        self.set_value("number.maximum_discharging_power", value=BatteryChargeFromGridFactor.get_max_discharging_power(factor))
+        self.set_state('sensor.battery_charge_from_grid_factor', state=factor)
+        self.set_value('number.grid_charge_maximum_power', value=BatteryChargeFromGridFactor.get_max_grid_charging_power(factor))
+        self.set_value('number.maximum_discharging_power', value=BatteryChargeFromGridFactor.get_max_discharging_power(factor))
 
         if factor > 1:
             self.log('factor is greater than 1, setting Time Of Use and charge from grid')
-            self.select_option("select.working_mode", "Time Of Use")
-            self.turn_on("switch.charge_from_grid")
+            self.select_option('select.working_mode', 'Time Of Use')
+            self.turn_on('switch.charge_from_grid')
         else:
             self.log('factor is less than 1, setting Maximise Self Consumption and NOT charge from grid')
-            self.select_option("select.working_mode", "Maximise Self Consumption")
-            self.turn_off("switch.charge_from_grid")
+            self.select_option('select.working_mode', 'Maximise Self Consumption')
+            self.turn_off('switch.charge_from_grid')
 
         self.log(f'Working mode is: {self.entities.select.working_mode.state}')
         self.log(f'Charge from grid switch is: {self.entities.switch.charge_from_grid.state}')
