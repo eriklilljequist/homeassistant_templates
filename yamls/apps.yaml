@@ -4,3 +4,6 @@ BatteryChargeFromGridFactor:
 HouseConsumption:
   module: house_consumption
   class: HouseConsumption
+DailyYieldBatteryAccounted:
+  module: daily_yield_battery_accounted
+  class: DailyYieldBatteryAccounted

@@ -1,6 +1,7 @@
 scp \
 python_files/src/battery_charge_from_grid_factor.py \
 python_files/src/house_consumption.py \
+python_files/src/daily_yield_battery_accounted.py \
 yamls/apps.yaml \
 requirements.txt \
 pi@192.168.1.17:/home/pi/projects/raspbian_provision/appdaemon/apps
