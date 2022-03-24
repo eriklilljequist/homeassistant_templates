@@ -1,0 +1,2 @@
+BATTERY_GROSS_CAPACITY = 10
+THRESHOLD_FACTOR = threshold_factor = 1.4

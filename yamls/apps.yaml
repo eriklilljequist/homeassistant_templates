@@ -1,9 +1,20 @@
 BatteryChargeFromGridFactor:
   module: battery_charge_from_grid_factor
   class: BatteryChargeFromGridFactor
+BatteryChargeFromGenerationFactor:
+  module: battery_charge_from_generation_factor
+  class: BatteryChargeFromGenerationFactor
+BatteryDischargeFactor:
+  module: battery_discharge_factor
+  class: BatteryDischargeFactor
 HouseConsumption:
   module: house_consumption
   class: HouseConsumption
 DailyYieldBatteryAccounted:
   module: daily_yield_battery_accounted
   class: DailyYieldBatteryAccounted
+BatteryParameterSetter:
+  module: battery_parameter_setter
+  class: BatteryParameterSetter
+
+  
