@@ -15,8 +15,8 @@ class BatteryChargeFromGenerationFactor(hassapi.Hass):
         battery_soc = float(self.entities.sensor.battery_state_of_capacity.state)
         battery_charge_from_grid_factor = float(self.entities.sensor.battery_charge_from_grid_factor.state)
 
-        energy_still_to_be_produced = estimated_energy_production_today - daily_yield_battery_accounted
-        battery_left_to_charge = battery_soc / config.BATTERY_GROSS_CAPACITY
+        energy_still_to_be_produced = max(estimated_energy_production_today - daily_yield_battery_accounted, 0.01)  # Avoid zero division
+        battery_left_to_charge = config.BATTERY_GROSS_CAPACITY * battery_soc / 100
 
         factor = BatteryChargeFromGenerationFactor.get_factor(
             battery_charge_from_grid_factor=battery_charge_from_grid_factor,
@@ -32,4 +32,6 @@ class BatteryChargeFromGenerationFactor(hassapi.Hass):
     @staticmethod
     def get_factor(battery_charge_from_grid_factor, energy_still_to_be_produced, battery_left_to_charge):
         soc_factor = battery_left_to_charge / energy_still_to_be_produced
-        return round((soc_factor * battery_charge_from_grid_factor) * config.THRESHOLD_FACTOR, 2)
+        power_factor = ((battery_left_to_charge * 1000) / config.BATTERY_MAXIMUM_CHARGE_POWER) * soc_factor
+        price_factor = max(battery_charge_from_grid_factor, 0.6)
+        return round(power_factor * soc_factor * price_factor * config.THRESHOLD_FACTOR, 2)

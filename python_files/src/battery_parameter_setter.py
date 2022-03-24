@@ -1,3 +1,4 @@
+from utilities import config
 import hassapi
 
 
@@ -27,13 +28,16 @@ class BatteryParameterSetter(hassapi.Hass):
 
     def set_maximum_discharging_power(self, entity, attribute, old, new, kwargs):
         battery_discharge_factor = float(self.entities.sensor.battery_discharge_factor.state)
-        power = BatteryParameterSetter.get_power(battery_discharge_factor)
+        power = BatteryParameterSetter.get_power(factor=battery_discharge_factor, nominal_power=2500)
         self.log(f'battery_discharge_factor is {battery_discharge_factor} setting maximum_discharging_power to {power}')
         self.set_value('number.maximum_discharging_power', value=power)
 
     def set_maximum_charging_power(self, entity, attribute, old, new, kwargs):
         battery_charge_from_generation_factor = float(self.entities.sensor.battery_charge_from_generation_factor.state)
-        power = BatteryParameterSetter.get_power(battery_charge_from_generation_factor)
+        power = BatteryParameterSetter.get_power(
+            factor=battery_charge_from_generation_factor,
+            nominal_power=config.BATTERY_MAXIMUM_CHARGE_POWER,
+            max_power=config.BATTERY_MAXIMUM_CHARGE_POWER)
         self.log(f'battery_charge_from_generation_factor is {battery_charge_from_generation_factor} setting maximum_charging_power to {power}')
         self.set_value('number.maximum_charging_power', value=power)
 
