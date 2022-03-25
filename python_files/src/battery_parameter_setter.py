@@ -1,4 +1,4 @@
-from utilities import config
+from src.utilities import config
 import hassapi
 
 
