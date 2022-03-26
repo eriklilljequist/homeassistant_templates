@@ -1,4 +1,4 @@
-rsync -a --delete --delete-excluded --recursive --exclude '*__pycache__/' -vv \
+rsync -a --delete --recursive --exclude '*__pycache__/' -vv \
 python_files/src \
 yamls/apps.yaml \
 requirements.txt \

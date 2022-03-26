@@ -20,8 +20,10 @@ class BatteryChargeFromGenerationFactor(hassapi.Hass):
         battery_soc = float(self.entities.sensor.battery_state_of_capacity.state)
         battery_charge_from_grid_factor = float(self.entities.sensor.battery_charge_from_grid_factor.state)
 
-        energy_still_to_be_produced = max(estimated_energy_production_today - daily_yield_battery_accounted, 0.01)  # Avoid zero division
-        battery_left_to_charge = config.BATTERY_GROSS_CAPACITY * battery_soc / 100
+        energy_still_to_be_produced = BatteryChargeFromGenerationFactor.get_energy_still_to_be_produced(
+            estimated_energy_production_today=estimated_energy_production_today,
+            daily_yield_battery_accounted=daily_yield_battery_accounted)
+        battery_left_to_charge = BatteryChargeFromGenerationFactor.get_battery_left_to_charge(battery_soc=battery_soc)
 
         factor = BatteryChargeFromGenerationFactor.get_factor(
             battery_charge_from_grid_factor=battery_charge_from_grid_factor,
@@ -35,11 +37,16 @@ class BatteryChargeFromGenerationFactor(hassapi.Hass):
         self.set_state('sensor.battery_charge_from_generation_factor', state=factor)
 
     @staticmethod
+    def get_battery_left_to_charge(battery_soc):
+        return round(config.BATTERY_GROSS_CAPACITY - (config.BATTERY_GROSS_CAPACITY * battery_soc / 100), 2)
+
+    @staticmethod
+    def get_energy_still_to_be_produced(estimated_energy_production_today, daily_yield_battery_accounted):
+        return round(max(estimated_energy_production_today - daily_yield_battery_accounted, 1), 2)  # Avoid zero division
+
+    @staticmethod
     def get_factor(battery_charge_from_grid_factor, energy_still_to_be_produced, battery_left_to_charge):
-        soc_factor = max((battery_left_to_charge * 2) / energy_still_to_be_produced, 1)
+        soc_factor = battery_left_to_charge * 2 / energy_still_to_be_produced
         power_factor = ((battery_left_to_charge * 1000) / config.BATTERY_MAXIMUM_CHARGE_POWER) * soc_factor
-        # price_factor = max(battery_charge_from_grid_factor, 0.6)
-        return round(power_factor * soc_factor * battery_charge_from_grid_factor * config.THRESHOLD_FACTOR, 2)
-
-
-# BATTERY_MAXIMUM_CHARGE_POWER = 3000
+        price_factor = power_factor * soc_factor * battery_charge_from_grid_factor
+        return round(power_factor * soc_factor * price_factor * config.THRESHOLD_FACTOR, 2)

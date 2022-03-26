@@ -1,8 +1,6 @@
 from src.utilities import config
 import hassapi
 
-# BATTERY_MAXIMUM_CHARGE_POWER = 3000
-
 
 class BatteryParameterSetter(hassapi.Hass):
     def initialize(self):
@@ -36,12 +34,16 @@ class BatteryParameterSetter(hassapi.Hass):
 
     def set_maximum_charging_power(self, entity, attribute, old, new, kwargs):
         battery_charge_from_generation_factor = float(self.entities.sensor.battery_charge_from_generation_factor.state)
+        grid_charge_power = self.entities.number.grid_charge_maximum_power.state
         power = BatteryParameterSetter.get_power(
             factor=battery_charge_from_generation_factor,
             nominal_power=config.BATTERY_MAXIMUM_CHARGE_POWER,
             max_power=config.BATTERY_MAXIMUM_CHARGE_POWER)
-        self.log(f'battery_charge_from_generation_factor is {battery_charge_from_generation_factor} setting maximum_charging_power to {power}')
-        self.set_value('number.maximum_charging_power', value=power)
+        self.log(f'Maximum charge power calculated to {power}')
+        self.log(f'Maximum grid_charge_power is {grid_charge_power}')
+        selected_power = max(power, grid_charge_power)
+        self.log(f'Setting maximum_charging_power to {selected_power}')
+        self.set_value('number.maximum_charging_power', value=selected_power)
 
     @staticmethod
     def get_power(factor, nominal_power=1500, max_power=3000):

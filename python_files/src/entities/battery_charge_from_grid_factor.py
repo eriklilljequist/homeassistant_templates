@@ -20,12 +20,17 @@ class BatteryChargeFromGridFactor(hassapi.Hass):
         zone_se = pytz.timezone('Europe/Stockholm')
         hour_current = datetime.now(tz=zone_se).hour
         price_current = nordpool_sensor.attributes.current_price
+        prices_all = BatteryChargeFromGridFactor.get_sanitized_list(nordpool_sensor.attributes.today + nordpool_sensor.attributes.tomorrow)
         factor = BatteryChargeFromGridFactor.get_factor(
             price_current=price_current,
-            prices_all=nordpool_sensor.attributes.today + nordpool_sensor.attributes.tomorrow,
+            prices_all=prices_all,
             hour_current=hour_current
         )
         self.set_state('sensor.battery_charge_from_grid_factor', state=factor)
+
+    @staticmethod
+    def get_sanitized_list(lst):
+        return list(filter(lambda x: type(x) == float, lst))
 
     @staticmethod
     def get_factor(price_current, prices_all, hour_current):
