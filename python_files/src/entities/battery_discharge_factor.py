@@ -1,5 +1,6 @@
 import hassapi
 from datetime import datetime
+from src.utilities import config
 
 
 class BatteryDischargeFactor(hassapi.Hass):
@@ -8,7 +9,9 @@ class BatteryDischargeFactor(hassapi.Hass):
         self.run_every(self.from_schedule, datetime.now(), 1 * 60)
 
     def from_schedule(self, kwargs):
-        self.execute()
+        if config.RUN_ON_SCHEDULE:
+            self.log('Executing on schedule!')
+            self.execute()
 
     def charge_from_grid_factor_change(self, entity, attribute, old, new, kwargs):
         self.execute()

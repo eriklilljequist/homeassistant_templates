@@ -68,10 +68,10 @@ class TestBatteryChargeFromGenerationFactor__VeryLowPrice(TestCase):
         ####
     def test__get_factor__very_good_forecast__foo(self):
         energy_still_to_be_produced = BatteryChargeFromGenerationFactor.get_energy_still_to_be_produced(estimated_energy_production_today=28.997, daily_yield_battery_accounted=33.53)
-        battery_left_to_charge = BatteryChargeFromGenerationFactor.get_battery_left_to_charge(78)
+        battery_left_to_charge = BatteryChargeFromGenerationFactor.get_battery_left_to_charge(71)
 
         factor = BatteryChargeFromGenerationFactor.get_factor(
-            battery_charge_from_grid_factor=0.683,
+            battery_charge_from_grid_factor=0.975,
             battery_left_to_charge=battery_left_to_charge,
             energy_still_to_be_produced=energy_still_to_be_produced
         )
