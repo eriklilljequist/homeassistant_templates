@@ -7,6 +7,10 @@ from src.utilities import config
 class BatteryChargeFromGridFactor(hassapi.Hass):
     def initialize(self):
         self.listen_state(self.nordpool_price_change, 'sensor.nordpool_kwh_se3_sek_2_10_025', constrain_presence='everyone')
+        self.run_every(self.from_schedule, datetime.now(), 1 * 60)
+
+    def from_schedule(self, kwargs):
+        self.execute()
 
     def nordpool_price_change(self, entity, attribute, old, new, kwargs):
         self.execute()

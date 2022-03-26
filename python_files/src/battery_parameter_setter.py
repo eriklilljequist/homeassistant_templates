@@ -1,6 +1,8 @@
 from src.utilities import config
 import hassapi
 
+# BATTERY_MAXIMUM_CHARGE_POWER = 3000
+
 
 class BatteryParameterSetter(hassapi.Hass):
     def initialize(self):
@@ -12,11 +14,11 @@ class BatteryParameterSetter(hassapi.Hass):
     def set_battery_working_mode(self, entity, attribute, old, new, kwargs):
         battery_charge_from_grid_factor = float(self.entities.sensor.battery_charge_from_grid_factor.state)
         if battery_charge_from_grid_factor > 1:
-            self.log('battery_charge_from_grid_factor is greater than 1, setting Time Of Use and charge from grid')
+            self.log('battery_charge_from_grid_factor is greater than 1, setting charge from grid')
             self.select_option('select.working_mode', 'Time Of Use')
             self.turn_on('switch.charge_from_grid')
         else:
-            self.log('battery_charge_from_grid_factor is less than 1, setting Maximise Self Consumption and NOT charge from grid')
+            self.log('battery_charge_from_grid_factor is less than 1, Setting NOT charge from grid')
             self.select_option('select.working_mode', 'Maximise Self Consumption')
             self.turn_off('switch.charge_from_grid')
 
@@ -28,7 +30,7 @@ class BatteryParameterSetter(hassapi.Hass):
 
     def set_maximum_discharging_power(self, entity, attribute, old, new, kwargs):
         battery_discharge_factor = float(self.entities.sensor.battery_discharge_factor.state)
-        power = BatteryParameterSetter.get_power(factor=battery_discharge_factor, nominal_power=2500)
+        power = BatteryParameterSetter.get_power(factor=battery_discharge_factor)
         self.log(f'battery_discharge_factor is {battery_discharge_factor} setting maximum_discharging_power to {power}')
         self.set_value('number.maximum_discharging_power', value=power)
 

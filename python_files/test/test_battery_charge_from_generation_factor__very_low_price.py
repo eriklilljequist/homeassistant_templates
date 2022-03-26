@@ -57,12 +57,11 @@ class TestBatteryChargeFromGenerationFactor__VeryLowPrice(TestCase):
         )
         assert factor == 0.14
 
-
 #######
     def test__get_factor__foobar(self):
         factor = BatteryChargeFromGenerationFactor.get_factor(
-            battery_charge_from_grid_factor=1.3,
-            battery_left_to_charge=3,
-            energy_still_to_be_produced=15
+            battery_charge_from_grid_factor=0.485,
+            battery_left_to_charge=5,
+            energy_still_to_be_produced=0.1
         )
-        assert factor == 0.07
+        assert factor == 0.84

@@ -1,10 +1,15 @@
 import hassapi
 from src.utilities import config
+from datetime import datetime
 
 
 class BatteryChargeFromGenerationFactor(hassapi.Hass):
     def initialize(self):
         self.listen_state(self.charge_from_grid_factor_change, 'sensor.battery_charge_from_grid_factor', constrain_presence='everyone')
+        self.run_every(self.from_schedule, datetime.now(), 1 * 60)
+
+    def from_schedule(self, kwargs):
+        self.execute()
 
     def charge_from_grid_factor_change(self, entity, attribute, old, new, kwargs):
         self.execute()
@@ -33,5 +38,8 @@ class BatteryChargeFromGenerationFactor(hassapi.Hass):
     def get_factor(battery_charge_from_grid_factor, energy_still_to_be_produced, battery_left_to_charge):
         soc_factor = max((battery_left_to_charge * 2) / energy_still_to_be_produced, 1)
         power_factor = ((battery_left_to_charge * 1000) / config.BATTERY_MAXIMUM_CHARGE_POWER) * soc_factor
-        price_factor = max(battery_charge_from_grid_factor, 0.6)
-        return round(power_factor * soc_factor * price_factor * config.THRESHOLD_FACTOR, 2)
+        # price_factor = max(battery_charge_from_grid_factor, 0.6)
+        return round(power_factor * soc_factor * battery_charge_from_grid_factor * config.THRESHOLD_FACTOR, 2)
+
+
+# BATTERY_MAXIMUM_CHARGE_POWER = 3000
