@@ -36,9 +36,7 @@ class BatteryParameterSetter(hassapi.Hass):
         battery_charge_from_generation_factor = float(self.entities.sensor.battery_charge_from_generation_factor.state)
         grid_charge_power = self.entities.number.grid_charge_maximum_power.state
         power = BatteryParameterSetter.get_power(
-            factor=battery_charge_from_generation_factor,
-            nominal_power=config.BATTERY_MAXIMUM_CHARGE_POWER,
-            max_power=config.BATTERY_MAXIMUM_CHARGE_POWER)
+            factor=battery_charge_from_generation_factor)
         self.log(f'Maximum charge power calculated to {power}')
         self.log(f'Maximum grid_charge_power is {grid_charge_power}')
         selected_power = max(power, grid_charge_power)
