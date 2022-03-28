@@ -1,17 +1,19 @@
 import hassapi
 from src.utilities import config
 from datetime import datetime
+import pytz
 
 
 class BatteryChargeFromGenerationFactor(hassapi.Hass):
     def initialize(self):
         self.listen_state(self.charge_from_grid_factor_change, 'sensor.battery_charge_from_grid_factor', constrain_presence='everyone')
-        self.run_every(self.from_schedule, datetime.now(), 1 * 60)
+        self.zone_se = pytz.timezone('Europe/Stockholm')
+        self.run_every(self.from_schedule, datetime.now(tz=self.zone_se), 1 * 60)
 
     def from_schedule(self, kwargs):
-        if config.RUN_ON_SCHEDULE:
-            self.log('Executing on schedule!')
-            self.execute()
+        # if config.RUN_ON_SCHEDULE:
+        #     self.log('Executing on schedule!')
+        self.execute()
 
     def charge_from_grid_factor_change(self, entity, attribute, old, new, kwargs):
         self.execute()
