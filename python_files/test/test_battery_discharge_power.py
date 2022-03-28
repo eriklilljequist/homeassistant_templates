@@ -1,28 +1,28 @@
 from src.entities.battery_discharge_factor import BatteryDischargeFactor
+from src.entities.price_threshold_factor import PriceThresholdFactor
 from src.battery_parameter_setter import BatteryParameterSetter
 from unittest import TestCase
-from src.utilities import config
 
 
 class TestBatteryDischargeFactor(TestCase):
 
     def test__get_factor__low_price(self):
-        price_threshold_factor = 0.3 / config.THRESHOLD_FACTOR
-        factor = BatteryDischargeFactor.get_factor(battery_charge_from_grid_factor=1.5, price_threshold_factor=price_threshold_factor)
-        assert factor == 0.14
-        assert BatteryParameterSetter.get_power(factor) == 210
+        price_threshold_factor = PriceThresholdFactor.get_factor(price_current=0.3)
+        factor = BatteryDischargeFactor.get_factor(battery_charge_from_grid_factor=2, price_threshold_factor=price_threshold_factor)
+        assert factor == 0.11
+        assert BatteryParameterSetter.get_power(factor) == 165
 
     def test__get_factor__medium_price(self):
-        price_threshold_factor = 1.3 / config.THRESHOLD_FACTOR
+        price_threshold_factor = PriceThresholdFactor.get_factor(price_current=1.3)
         factor = BatteryDischargeFactor.get_factor(battery_charge_from_grid_factor=1.5, price_threshold_factor=price_threshold_factor)
         assert factor == 0.62
         assert BatteryParameterSetter.get_power(factor) == 930
 
     def test__get_factor__high_price(self):
-        price_threshold_factor = 0.24 / config.THRESHOLD_FACTOR
-        factor = BatteryDischargeFactor.get_factor(battery_charge_from_grid_factor=0.65, price_threshold_factor=price_threshold_factor)
-        assert factor == 0.26
-        assert BatteryParameterSetter.get_power(factor) == 390
+        price_threshold_factor = PriceThresholdFactor.get_factor(price_current=2.24)
+        factor = BatteryDischargeFactor.get_factor(battery_charge_from_grid_factor=0.5, price_threshold_factor=price_threshold_factor)
+        assert factor == 3.23
+        assert BatteryParameterSetter.get_power(factor) == 3000
 
     def test__get_max_discharging_power(self):
         assert BatteryParameterSetter.get_power(factor=1 / 2.34) == 641

@@ -10,9 +10,9 @@ class BatteryChargeFromGridFactor(hassapi.Hass):
         self.run_every(self.from_schedule, datetime.now(), 1 * 60)
 
     def from_schedule(self, kwargs):
-        if config.RUN_ON_SCHEDULE:
-            self.log('Executing on schedule!')
-            self.execute()
+        # if config.RUN_ON_SCHEDULE:
+        #     self.log('Executing on schedule!')
+        self.execute()
 
     def nordpool_price_change(self, entity, attribute, old, new, kwargs):
         self.execute()
@@ -23,35 +23,26 @@ class BatteryChargeFromGridFactor(hassapi.Hass):
         hour_current = datetime.now(tz=zone_se).hour
         price_current = nordpool_sensor.attributes.current_price
         prices_all = BatteryChargeFromGridFactor.get_sanitized_list(nordpool_sensor.attributes.today + nordpool_sensor.attributes.tomorrow)
+        price_threshold_factor = float(self.entities.sensor.price_threshold_factor.state)
         factor = BatteryChargeFromGridFactor.get_factor(
             price_current=price_current,
             prices_all=prices_all,
-            hour_current=hour_current
+            hour_current=hour_current,
+            price_threshold_factor=price_threshold_factor
         )
         self.set_state('sensor.battery_charge_from_grid_factor', state=factor)
 
     @staticmethod
+    def get_factor(price_current, prices_all, hour_current, price_threshold_factor):
+        prices_future = prices_all[hour_current:hour_current + 12]
+        price_average_future = BatteryChargeFromGridFactor.get_average(prices_future)
+        price_average_factor = price_average_future / price_current
+        factor = price_average_factor / config.THRESHOLD_FACTOR
+        return round(factor, 3)
+
+    @staticmethod
     def get_sanitized_list(lst):
         return list(filter(lambda x: type(x) == float, lst))
-
-    @staticmethod
-    def get_factor(price_current, prices_all, hour_current):
-        period = 6
-        prices_current = prices_all[hour_current:hour_current + period]
-        prices_future = prices_all[hour_current + period:hour_current + period * 2]
-        price_average_current = BatteryChargeFromGridFactor.get_average(prices_current)
-        price_average_future = BatteryChargeFromGridFactor.get_average(prices_future)
-
-        return round(BatteryChargeFromGridFactor.calculate_factor(
-            price_current=price_current,
-            price_average_current=price_average_current,
-            price_average_future=price_average_future), 3)
-
-    @staticmethod
-    def calculate_factor(price_current, price_average_current, price_average_future):
-        average_factor_future = price_average_future / price_current
-        average_factor_current = price_average_current / price_current
-        return (average_factor_future + average_factor_current) / 2 / config.THRESHOLD_FACTOR
 
     @staticmethod
     def get_average(lst):

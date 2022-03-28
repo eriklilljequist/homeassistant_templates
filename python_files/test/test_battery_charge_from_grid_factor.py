@@ -1,15 +1,7 @@
 from src.entities.battery_charge_from_grid_factor import BatteryChargeFromGridFactor
+from src.entities.price_threshold_factor import PriceThresholdFactor
 from src.battery_parameter_setter import BatteryParameterSetter
 from unittest import TestCase
-from datetime import datetime
-import pytz
-
-
-def test__time():
-    zone_se = pytz.timezone('Europe/Stockholm')
-    datetime.now(tz=zone_se).hour
-    pass
-
 
 march_8th = {
     'today': [2.12, 1.31, 1.61, 2.06, 2.38, 3.03, 3.23, 9.1, 8.58, 5.45, 3.12, 2.9, 2.83, 2.82, 2.78, 2.93, 2.72, 3.16, 3.73, 3.41, 3.12, 3.03, 2.94, 2.2],
@@ -31,118 +23,169 @@ class TestBatteryChargeFromGridFactor(TestCase):
 
     def test__march_8th__1200(self):
         hour_current = 12
+        price_current = march_10th['today'][hour_current]
+        price_threshold_factor = PriceThresholdFactor.get_factor(price_current=price_current)
         factor = BatteryChargeFromGridFactor.get_factor(
             hour_current=hour_current,
             prices_all=march_8th['today'] + march_8th['tomorrow'],
-            price_current=march_8th['today'][hour_current]
+            price_current=march_8th['today'][hour_current],
+            price_threshold_factor=price_threshold_factor
         )
         assert factor > 0.7 and factor < 0.8
 
     def test__march_8th__2200(self):
         hour_current = 22
+        price_current = march_10th['today'][hour_current]
+        price_threshold_factor = PriceThresholdFactor.get_factor(price_current=price_current)
         factor = BatteryChargeFromGridFactor.get_factor(
             hour_current=hour_current,
             prices_all=march_8th['today'] + march_8th['tomorrow'],
-            price_current=march_8th['today'][hour_current]
+            price_current=march_8th['today'][hour_current],
+            price_threshold_factor=price_threshold_factor
         )
         assert factor > 0.8 and factor < 0.9
 
     def test__march_8th__2300(self):
         hour_current = 23
+        price_current = march_10th['today'][hour_current]
+        price_threshold_factor = PriceThresholdFactor.get_factor(price_current=price_current)
         factor = BatteryChargeFromGridFactor.get_factor(
             hour_current=hour_current,
             prices_all=march_8th['today'] + march_8th['tomorrow'],
-            price_current=march_8th['today'][hour_current]
+            price_current=march_8th['today'][hour_current],
+            price_threshold_factor=price_threshold_factor
         )
         assert factor > 1 and factor < 1.1
 
     def test__march_9th__0800(self):
         hour_current = 8
+        price_current = march_10th['today'][hour_current]
+        price_threshold_factor = PriceThresholdFactor.get_factor(price_current=price_current)
         factor = BatteryChargeFromGridFactor.get_factor(
             hour_current=hour_current,
             prices_all=march_9th['today'] + march_9th['tomorrow'],
-            price_current=march_9th['today'][hour_current]
+            price_current=march_9th['today'][hour_current],
+            price_threshold_factor=price_threshold_factor
         )
         assert factor > 0.3 and factor < 0.4
 
     def test__march_9th__0900(self):
         hour_current = 9
+        price_current = march_10th['today'][hour_current]
+        price_threshold_factor = PriceThresholdFactor.get_factor(price_current=price_current)
         factor = BatteryChargeFromGridFactor.get_factor(
             hour_current=hour_current,
             prices_all=march_9th['today'] + march_9th['tomorrow'],
-            price_current=march_9th['today'][hour_current]
+            price_current=march_9th['today'][hour_current],
+            price_threshold_factor=price_threshold_factor
         )
         assert factor > 0.6 and factor < 0.7
 
     def test__march_9th__2100(self):
         hour_current = 21
+        price_current = march_10th['today'][hour_current]
+        price_threshold_factor = PriceThresholdFactor.get_factor(price_current=price_current)
         factor = BatteryChargeFromGridFactor.get_factor(
             hour_current=hour_current,
             prices_all=march_9th['today'] + march_9th['tomorrow'],
-            price_current=march_9th['today'][hour_current]
+            price_current=march_9th['today'][hour_current],
+            price_threshold_factor=price_threshold_factor
         )
         assert factor > 0.2 and factor < 0.3
 
     def test__march_9th__2200(self):
         hour_current = 22
+        price_current = march_10th['today'][hour_current]
+        price_threshold_factor = PriceThresholdFactor.get_factor(price_current=price_current)
         factor = BatteryChargeFromGridFactor.get_factor(
             hour_current=hour_current,
             prices_all=march_9th['today'] + march_9th['tomorrow'],
-            price_current=march_9th['today'][hour_current]
+            price_current=march_9th['today'][hour_current],
+            price_threshold_factor=price_threshold_factor
         )
         assert factor > 0.7 and factor < 0.8
 
     def test__march_9th__2300(self):
         hour_current = 23
+        price_current = march_10th['today'][hour_current]
+        price_threshold_factor = PriceThresholdFactor.get_factor(price_current=price_current)
         factor = BatteryChargeFromGridFactor.get_factor(
             hour_current=hour_current,
             prices_all=march_9th['today'] + march_9th['tomorrow'],
-            price_current=march_9th['today'][hour_current]
+            price_current=march_9th['today'][hour_current],
+            price_threshold_factor=price_threshold_factor
         )
         assert factor > 1.9 and factor < 2.1
 
     def test__march_10th__0000(self):
         hour_current = 0
+        price_current = march_10th['today'][hour_current]
+        price_threshold_factor = PriceThresholdFactor.get_factor(price_current=price_current)
         factor = BatteryChargeFromGridFactor.get_factor(
             hour_current=hour_current,
             prices_all=march_10th['today'] + march_10th['tomorrow'],
-            price_current=march_10th['today'][hour_current]
+            price_current=march_10th['today'][hour_current],
+            price_threshold_factor=price_threshold_factor
         )
         assert factor > 3 and factor < 3.2
 
     def test__march_10th__0300(self):
         hour_current = 3
+        price_current = march_10th['today'][hour_current]
+        price_threshold_factor = PriceThresholdFactor.get_factor(price_current=price_current)
         factor = BatteryChargeFromGridFactor.get_factor(
             hour_current=hour_current,
             prices_all=march_10th['today'] + march_10th['tomorrow'],
-            price_current=march_10th['today'][hour_current]
+            price_current=march_10th['today'][hour_current],
+            price_threshold_factor=price_threshold_factor
         )
         assert factor > 6 and factor < 6.5
 
     def test__march_10th__0600(self):
         hour_current = 6
+        price_current = march_10th['today'][hour_current]
+        price_threshold_factor = PriceThresholdFactor.get_factor(price_current=price_current)
         factor = BatteryChargeFromGridFactor.get_factor(
             hour_current=hour_current,
             prices_all=march_10th['today'] + march_10th['tomorrow'],
-            price_current=march_10th['today'][hour_current]
+            price_current=march_10th['today'][hour_current],
+            price_threshold_factor=price_threshold_factor
         )
         assert factor > 1.6 and factor < 1.7
 
     def test__march_10th__1100(self):
         hour_current = 11
+        price_current = march_10th['today'][hour_current]
+        price_threshold_factor = PriceThresholdFactor.get_factor(price_current=price_current)
         factor = BatteryChargeFromGridFactor.get_factor(
             hour_current=hour_current,
             prices_all=march_10th['today'] + march_10th['tomorrow'],
-            price_current=march_10th['today'][hour_current]
+            price_current=march_10th['today'][hour_current],
+            price_threshold_factor=price_threshold_factor
         )
         assert factor > 1 and factor < 1.1
 
     def test__march_10th__1200(self):
         hour_current = 12
+        price_current = march_10th['today'][hour_current]
+        price_threshold_factor = PriceThresholdFactor.get_factor(price_current=price_current)
         factor = BatteryChargeFromGridFactor.get_factor(
             hour_current=hour_current,
             prices_all=march_10th['today'] + march_10th['tomorrow'],
-            price_current=march_10th['today'][hour_current]
+            price_current=march_10th['today'][hour_current],
+            price_threshold_factor=price_threshold_factor
+        )
+        assert factor > 0.8 and factor < 0.9
+
+    def test__march_10th__1200__high_price(self):
+        hour_current = 12
+        price_current = march_10th['today'][hour_current]
+        price_threshold_factor = PriceThresholdFactor.get_factor(price_current=price_current)
+        factor = BatteryChargeFromGridFactor.get_factor(
+            hour_current=hour_current,
+            prices_all=march_10th['today'] + march_10th['tomorrow'],
+            price_current=price_current,
+            price_threshold_factor=price_threshold_factor
         )
         assert factor > 0.8 and factor < 0.9
 
