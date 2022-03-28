@@ -19,3 +19,6 @@ BatteryParameterSetter:
 PriceThresholdFactor:
   module: price_threshold_factor
   class: PriceThresholdFactor
+BatteryGridChargeCutoffFactor:
+  module: battery_grid_charge_cutoff_factor
+  class: BatteryGridChargeCutoffFactor

@@ -7,14 +7,19 @@ class BatteryParameterSetter(hassapi.Hass):
         self.listen_state(self.set_battery_charge_from_grid_power, 'sensor.battery_charge_from_grid_factor', constrain_presence='everyone')
         self.listen_state(self.set_maximum_discharging_power, 'sensor.battery_discharge_factor', constrain_presence='everyone')
         self.listen_state(self.set_maximum_charging_power, 'sensor.battery_charge_from_generation_factor', constrain_presence='everyone')
-        self.listen_state(self.set_grid_charge_cutoff_soc, 'sensor.energy_production_today_2', constrain_presence='everyone')
+        self.listen_state(self.set_grid_charge_cutoff_soc, 'sensor.battery_grid_charge_cutoff_factor', constrain_presence='everyone')
 
-    def set_grid_charge_cutoff_soc(self, *_):
-        estimated_energy_production_today = float(self.entities.sensor.energy_production_today_2.state)
-        if estimated_energy_production_today > 15:
-            self.set_value('number.grid_charge_cutoff_soc', value=90)
-        else:
-            self.set_value('number.grid_charge_cutoff_soc', value=70)
+    def set_grid_charge_cutoff_soc(self, entity, attribute, old, new, kwargs):
+        battery_grid_charge_cutoff_factor = float(self.entities.sensor.battery_grid_charge_cutoff_factor.state)
+        cutoff = battery_grid_charge_cutoff_factor * 70
+        self.log(f'Cutoff calculated to {cutoff}')
+        cutoff_in_range = BatteryParameterSetter.get_within_range(number=cutoff, min_number=60, max_number=80)
+        self.log(f'Limited Cutoff calculated to {cutoff_in_range}')
+        self.set_value('number.grid_charge_cutoff_soc', value=cutoff_in_range)
+
+    @staticmethod
+    def get_within_range(number, min_number, max_number):
+        return round(max(min(max_number, number), min_number), 0)
 
     def set_battery_working_mode(self, entity, attribute, old, new, kwargs):
         battery_charge_from_grid_factor = float(self.entities.sensor.battery_charge_from_grid_factor.state)
