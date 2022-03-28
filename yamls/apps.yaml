@@ -16,5 +16,6 @@ DailyYieldBatteryAccounted:
 BatteryParameterSetter:
   module: battery_parameter_setter
   class: BatteryParameterSetter
-
-  
+PriceThresholdFactor:
+  module: price_threshold_factor
+  class: PriceThresholdFactor
