@@ -23,17 +23,15 @@ class BatteryChargeFromGridFactor(hassapi.Hass):
         hour_current = datetime.now(tz=self.zone_se).hour
         price_current = nordpool_sensor.attributes.current_price
         prices_all = BatteryChargeFromGridFactor.get_sanitized_list(nordpool_sensor.attributes.today + nordpool_sensor.attributes.tomorrow)
-        price_threshold_factor = float(self.entities.sensor.price_threshold_factor.state)
         factor = BatteryChargeFromGridFactor.get_factor(
             price_current=price_current,
             prices_all=prices_all,
-            hour_current=hour_current,
-            price_threshold_factor=price_threshold_factor
+            hour_current=hour_current
         )
         self.set_state('sensor.battery_charge_from_grid_factor', state=factor)
 
     @staticmethod
-    def get_factor(price_current, prices_all, hour_current, price_threshold_factor):
+    def get_factor(price_current, prices_all, hour_current):
         prices_future = prices_all[hour_current:hour_current + 12]
         price_average_future = BatteryChargeFromGridFactor.get_average(prices_future)
         price_average_factor = price_average_future / price_current

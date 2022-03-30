@@ -9,8 +9,8 @@ class TestBatteryDischargeFactor(TestCase):
     def test__get_factor__low_price(self):
         price_threshold_factor = PriceThresholdFactor.get_factor(price_current=0.3)
         factor = BatteryDischargeFactor.get_factor(battery_charge_from_grid_factor=2, price_threshold_factor=price_threshold_factor)
-        assert factor == 0.11
-        assert BatteryParameterSetter.get_power(factor) == 165
+        assert factor == 0.1
+        assert BatteryParameterSetter.get_power(factor) == 150
 
     def test__get_factor__medium_price(self):
         price_threshold_factor = PriceThresholdFactor.get_factor(price_current=1.3)
@@ -21,7 +21,7 @@ class TestBatteryDischargeFactor(TestCase):
     def test__get_factor__high_price(self):
         price_threshold_factor = PriceThresholdFactor.get_factor(price_current=2.24)
         factor = BatteryDischargeFactor.get_factor(battery_charge_from_grid_factor=0.5, price_threshold_factor=price_threshold_factor)
-        assert factor == 3.23
+        assert factor == 3.2
         assert BatteryParameterSetter.get_power(factor) == 3000
 
     def test__get_max_discharging_power(self):
