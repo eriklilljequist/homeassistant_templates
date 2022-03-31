@@ -1,7 +1,7 @@
 import hassapi
 from datetime import datetime
 import pytz
-# from src.utilities import config
+from src.utilities import config
 
 
 class BatteryGridChargeCutoffFactor(hassapi.Hass):
@@ -25,4 +25,4 @@ class BatteryGridChargeCutoffFactor(hassapi.Hass):
 
     @staticmethod
     def get_factor(estimated_energy_production_today):
-        return round(15 / estimated_energy_production_today, 2)
+        return round(config.FORECAST_THRESHOLD / estimated_energy_production_today, 2)
