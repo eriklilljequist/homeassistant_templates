@@ -11,9 +11,9 @@ class BatteryChargeFromGridFactor(hassapi.Hass):
         self.run_every(self.from_schedule, datetime.now(tz=self.zone_se), 1 * 60)
 
     def from_schedule(self, kwargs):
-        # if config.RUN_ON_SCHEDULE:
-        #     self.log('Executing on schedule!')
-        self.execute()
+        if config.RUN_ON_SCHEDULE:
+            self.log('Executing on schedule!')
+            self.execute()
 
     def nordpool_price_change(self, entity, attribute, old, new, kwargs):
         self.execute()

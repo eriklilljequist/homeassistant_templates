@@ -1,7 +1,7 @@
 import hassapi
 from datetime import datetime
 import pytz
-from src.utilities import config
+from src.utilities import config, utils
 
 
 class BatteryGridChargeCutoffFactor(hassapi.Hass):
@@ -11,15 +11,19 @@ class BatteryGridChargeCutoffFactor(hassapi.Hass):
         self.run_every(self.from_schedule, datetime.now(tz=self.zone_se), 1 * 60)
 
     def from_schedule(self, kwargs):
-        # if config.RUN_ON_SCHEDULE:
-        #     self.log('Executing on schedule!')
-        self.execute()
+        if config.RUN_ON_SCHEDULE:
+            self.log('Executing on schedule!')
+            self.execute()
 
     def energy_production_today_change(self, entity, attribute, old, new, kwargs):
         self.execute()
 
     def execute(self):
-        estimated_energy_production_today = float(self.entities.sensor.energy_production_today_2.state)
+        estimated_energy_production_today = utils.as_float(
+            logger=self.log,
+            string=self.entities.sensor.energy_production_today_2.state,
+            or_else=config.FORECAST_THRESHOLD
+        )
         factor = BatteryGridChargeCutoffFactor.get_factor(estimated_energy_production_today)
         self.set_state('sensor.battery_grid_charge_cutoff_factor', state=factor)
 

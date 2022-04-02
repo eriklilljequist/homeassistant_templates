@@ -23,7 +23,7 @@ class BatteryParameterSetter(hassapi.Hass):
 
     def set_battery_working_mode(self, entity, attribute, old, new, kwargs):
         battery_charge_from_grid_factor = float(self.entities.sensor.battery_charge_from_grid_factor.state)
-        if battery_charge_from_grid_factor > 1:
+        if battery_charge_from_grid_factor >= 1:
             self.log('battery_charge_from_grid_factor is greater than 1, setting charge from grid')
             self.select_option('select.working_mode', 'Time Of Use')
             self.turn_on('switch.charge_from_grid')
@@ -47,8 +47,7 @@ class BatteryParameterSetter(hassapi.Hass):
     def set_maximum_charging_power(self, entity, attribute, old, new, kwargs):
         battery_charge_from_generation_factor = float(self.entities.sensor.battery_charge_from_generation_factor.state)
         grid_charge_power = int(self.entities.number.grid_charge_maximum_power.state)
-        power = BatteryParameterSetter.get_power(
-            factor=battery_charge_from_generation_factor)
+        power = BatteryParameterSetter.get_power(factor=battery_charge_from_generation_factor)
         self.log(f'Maximum charge power calculated to {power}')
         self.log(f'Maximum grid_charge_power is {grid_charge_power}')
         selected_power = max(power, grid_charge_power)
