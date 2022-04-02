@@ -11,55 +11,53 @@ class TestBatteryChargeFromGenerationFactor__VeryLowPrice(TestCase):
         factor = BatteryChargeFromGenerationFactor.get_factor(
             battery_charge_from_grid_factor=BATTERY_CHARGE_FROM_GRID_FACTOR,
             battery_left_to_charge=5,
-            energy_still_to_be_produced=0.1
+            estimated_energy_production_today=0.1,
+            daily_yield_battery_accounted=0
         )
-        assert factor == 1166666666.67
+        assert factor == 30603
 
     def test__get_factor__very_poor_forecast(self):
         factor = BatteryChargeFromGenerationFactor.get_factor(
             battery_charge_from_grid_factor=BATTERY_CHARGE_FROM_GRID_FACTOR,
             battery_left_to_charge=5,
-            energy_still_to_be_produced=1
+            estimated_energy_production_today=1,
+            daily_yield_battery_accounted=0
         )
-        assert factor == 116666.67
+        assert factor == 363
 
     def test__get_factor__poor_forecast(self):
         factor = BatteryChargeFromGenerationFactor.get_factor(
             battery_charge_from_grid_factor=BATTERY_CHARGE_FROM_GRID_FACTOR,
             battery_left_to_charge=5,
-            energy_still_to_be_produced=3
+            estimated_energy_production_today=3,
+            daily_yield_battery_accounted=0
         )
-        assert factor == 1440.33
+        assert factor == 56.33
         # assert BatteryParameterSetter.get_power(factor) == 3000
 
     def test__get_factor__ok_forecast(self):
         factor = BatteryChargeFromGenerationFactor.get_factor(
             battery_charge_from_grid_factor=BATTERY_CHARGE_FROM_GRID_FACTOR,
             battery_left_to_charge=5,
-            energy_still_to_be_produced=5
+            estimated_energy_production_today=5,
+            daily_yield_battery_accounted=0
         )
-        assert factor == 186.67
+        assert factor == 27
 
     def test__get_factor__good_forecast(self):
         factor = BatteryChargeFromGenerationFactor.get_factor(
             battery_charge_from_grid_factor=BATTERY_CHARGE_FROM_GRID_FACTOR,
             battery_left_to_charge=5,
-            energy_still_to_be_produced=10
+            estimated_energy_production_today=10,
+            daily_yield_battery_accounted=0
         )
-        assert factor == 11.67
+        assert factor == 12
 
     def test__get_factor__very_good_forecast(self):
         factor = BatteryChargeFromGenerationFactor.get_factor(
             battery_charge_from_grid_factor=BATTERY_CHARGE_FROM_GRID_FACTOR,
             battery_left_to_charge=5,
-            energy_still_to_be_produced=15
+            estimated_energy_production_today=15,
+            daily_yield_battery_accounted=0
         )
-        assert factor == 2.3
-
-    def test__get_factor__very_good_forecast__(self):
-        factor = BatteryChargeFromGenerationFactor.get_factor(
-            battery_charge_from_grid_factor=4.3,
-            battery_left_to_charge=3,
-            energy_still_to_be_produced=15
-        )
-        assert factor == 0.15
+        assert factor == 8.33

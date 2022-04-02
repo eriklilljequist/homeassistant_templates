@@ -1,5 +1,4 @@
 from src.entities.battery_charge_from_grid_factor import BatteryChargeFromGridFactor
-from src.entities.price_threshold_factor import PriceThresholdFactor
 from src.battery_parameter_setter import BatteryParameterSetter
 from unittest import TestCase
 
