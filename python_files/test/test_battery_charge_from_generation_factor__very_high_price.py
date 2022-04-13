@@ -24,7 +24,7 @@ class TestBatteryChargeFromGenerationFactor__VeryHighPrice(TestCase):
             estimated_energy_production_today=12,
             daily_yield_battery_accounted=10
         )
-        assert factor == 22.5
+        assert factor == 90
 
     def test__get_factor__poor_forecast(self):
         factor = BatteryChargeFromGenerationFactor.get_factor(
@@ -33,7 +33,7 @@ class TestBatteryChargeFromGenerationFactor__VeryHighPrice(TestCase):
             estimated_energy_production_today=13,
             daily_yield_battery_accounted=10
         )
-        assert factor == 5.22
+        assert factor == 20.86
         assert BatteryParameterSetter.get_power(factor) == 3000
 
     def test__get_factor__ok_forecast(self):
@@ -43,8 +43,8 @@ class TestBatteryChargeFromGenerationFactor__VeryHighPrice(TestCase):
             estimated_energy_production_today=15,
             daily_yield_battery_accounted=10
         )
-        assert factor == 1.3
-        assert BatteryParameterSetter.get_power(factor) == 1950
+        assert factor == 5.18
+        assert BatteryParameterSetter.get_power(factor) == 3000
 
     def test__get_factor__good_forecast(self):
         factor = BatteryChargeFromGenerationFactor.get_factor(
@@ -53,8 +53,8 @@ class TestBatteryChargeFromGenerationFactor__VeryHighPrice(TestCase):
             estimated_energy_production_today=15,
             daily_yield_battery_accounted=5
         )
-        assert factor == 0.06
-        assert BatteryParameterSetter.get_power(factor) == 90
+        assert factor == 0.23
+        assert BatteryParameterSetter.get_power(factor) == 345
 
     def test__get_factor__very_good_forecast(self):
         factor = BatteryChargeFromGenerationFactor.get_factor(
@@ -63,7 +63,7 @@ class TestBatteryChargeFromGenerationFactor__VeryHighPrice(TestCase):
             estimated_energy_production_today=20,
             daily_yield_battery_accounted=5
         )
-        assert factor == 0.02
+        assert factor == 0.08
 
     def test__get_factor__very_good_forecast__battery_empty(self):
         factor = BatteryChargeFromGenerationFactor.get_factor(

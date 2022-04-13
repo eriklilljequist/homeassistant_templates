@@ -22,7 +22,8 @@ class BatteryGridChargeCutoffFactor(hassapi.Hass):
         estimated_energy_production_today = utils.as_float(
             logger=self.log,
             string=self.entities.sensor.energy_production_today_2.state,
-            or_else=config.FORECAST_THRESHOLD
+            or_else=config.FORECAST_THRESHOLD,
+            not_less_than=1
         )
         factor = BatteryGridChargeCutoffFactor.get_factor(estimated_energy_production_today)
         self.set_state('sensor.battery_grid_charge_cutoff_factor', state=factor)

@@ -29,7 +29,7 @@ class BatteryChargeFromGenerationFactor(hassapi.Hass):
         battery_soc = float(self.entities.sensor.battery_state_of_capacity.state)
         battery_charge_from_grid_factor = float(self.entities.sensor.battery_charge_from_grid_factor.state)
 
-        battery_left_to_charge = BatteryChargeFromGenerationFactor.get_battery_left_to_charge(battery_soc=battery_soc)
+        battery_left_to_charge = round(config.BATTERY_GROSS_CAPACITY - (config.BATTERY_GROSS_CAPACITY * battery_soc / 100), 2)
 
         factor = BatteryChargeFromGenerationFactor.get_factor(
             battery_charge_from_grid_factor=battery_charge_from_grid_factor,
@@ -43,20 +43,8 @@ class BatteryChargeFromGenerationFactor(hassapi.Hass):
         self.set_state('sensor.battery_charge_from_generation_factor', state=factor)
 
     @staticmethod
-    def get_battery_left_to_charge(battery_soc):
-        return round(config.BATTERY_GROSS_CAPACITY - (config.BATTERY_GROSS_CAPACITY * battery_soc / 100), 2)
-
-    @staticmethod
-    def get_energy_still_to_be_produced(estimated_energy_production_today, daily_yield_battery_accounted):
-        return round(max(estimated_energy_production_today - daily_yield_battery_accounted, 1), 2)  # Avoid zero division
-
-    @staticmethod
     def get_factor(battery_charge_from_grid_factor, estimated_energy_production_today, battery_left_to_charge, daily_yield_battery_accounted):
-        energy_still_to_be_produced = BatteryChargeFromGenerationFactor.get_energy_still_to_be_produced(
-            estimated_energy_production_today=estimated_energy_production_today,
-            daily_yield_battery_accounted=daily_yield_battery_accounted)
-
-        still_to_produce_factor = estimated_energy_production_today / energy_still_to_be_produced
+        energy_still_to_be_produced = round(max(estimated_energy_production_today - daily_yield_battery_accounted, 1), 2)
+        still_to_produce_factor = max(estimated_energy_production_today / energy_still_to_be_produced, 1)
         soc_factor = (battery_left_to_charge * 2) / energy_still_to_be_produced  # Times 2 in order to have som margin
-        # power_factor = 1 + min((config.BATTERY_MAXIMUM_CHARGE_POWER / (battery_left_to_charge * 1000)), 1)
         return round(pow(soc_factor, 2) * pow(still_to_produce_factor, 2) * battery_charge_from_grid_factor, 2)
